@@ -1,6 +1,8 @@
 ## cmdGPT - A Command Line Interface for OpenAI GPT
 cmdGPT is a terminal-based chat interface for interacting with OpenAI's GPT models, tailored for developers and enthusiasts. It offers a quick and straightforward way to chat with various GPT models without a graphical user interface.
 
+<img src="examples/cmdGPT.png" width="500"/>
+
 ### Features
 Terminal-based chat interface for a streamlined experience.
 Selection from different GPT models, including GPT-3.5 and GPT-4.
@@ -9,6 +11,8 @@ Colorful ASCII art title and startup instructions.
 Error logging for troubleshooting.
 Optional command-line arguments for model and voice selection.
 Chat transcript preservation for record-keeping.
+
+<img src="examples/cmdGPT2.png" width="500"/>
 
 ### Prerequisites
 Python 3.11 or newer.
