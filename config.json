@@ -1,0 +1,50 @@
+[
+    {
+        "name": "Rachel",
+        "voice_id": "21m00Tcm4TlvDq8ikWAM",
+        "voice_settings": {
+            "stability": 0.6,
+            "similarity_boost": false
+        }
+    },
+    {
+        "name": "Bella",
+        "voice_id": "EXAVITQu4vr4xnSDxMaL",
+        "voice_settings": {
+            "stability": 0.5,
+            "similarity_boost": true
+        }
+    },
+    {
+        "name": "Adam",
+        "voice_id": "pNInz6obpgDQGcFmaJgB",
+        "voice_settings": {
+            "stability": 0.5,
+            "similarity_boost": true
+        }
+    },
+    {
+        "name": "Antoni",
+        "voice_id": "ErXwobaYiN019PkySvjV",
+        "voice_settings": {
+            "stability": 0.5,
+            "similarity_boost": true
+        }
+    },
+    {
+        "name": "Jessie",
+        "voice_id": "t0jbNlBVZ17f02VDIeMI",
+        "voice_settings": {
+            "stability": 0.5,
+            "similarity_boost": true
+        }
+    },
+    {
+        "name": "Santa Claus",
+        "voice_id": "knrPHWnBmmDHMoiMeP3l",
+        "voice_settings": {
+            "stability": 0.5,
+            "similarity_boost": true
+        }
+    }
+]
