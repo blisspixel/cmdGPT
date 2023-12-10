@@ -93,7 +93,7 @@ def display_short_title(model_name):
 async def animate_processing(message):
     dots = 1
     while True:
-        print(f"\r{message}" + "." * dots + " " * (3 - dots), end="")
+        print(f"\r{system_color}{message}" + "." * dots + " " * (3 - dots), end="")
         dots = (dots % 3) + 1
         await asyncio.sleep(0.5)  # Adjust the speed of animation as needed
 
@@ -230,6 +230,7 @@ async def stream_audio_websocket(voice_config, text, display_text_callback):
         is_final = False
         progress_chars = ['.', '..', '...']
         progress_idx = 0
+
         while not is_final:
             response = await websocket.recv()
             data = json.loads(response)
@@ -241,7 +242,7 @@ async def stream_audio_websocket(voice_config, text, display_text_callback):
                 is_final = True
             else:
                 # Animate processing message
-                print(f"\rProcessing Audio {progress_chars[progress_idx % 3]} ", end="")
+                print(f"\r{system_color}Processing Audio {progress_chars[progress_idx % 3]} ", end="")
                 progress_idx += 1
 
         # Clear the processing message right before playing the audio
@@ -280,17 +281,27 @@ async def chat():
     # Display initial ASCII art and instructions
     display_initial_title()
 
-    while True:
-        # Select model and voice configuration
-        model, voice_config = select_model_and_voice()
+    # Load custom voices from config
+    custom_voices = load_custom_voices()
 
+    # Use the model from arguments or prompt the user
+    model = args.model if args.model != 'gpt-4-1106-preview' else select_model()
+
+    # If voice argument is provided and valid, use it; otherwise, prompt the user
+    if 0 < args.voice <= len(custom_voices):
+        voice_config = custom_voices[args.voice - 1]  # Arrays are 0-indexed, so subtract 1
+    else:
+        voice_choice = select_voice()  # This prompts the user and returns the index
+        voice_config = custom_voices[voice_choice - 1] if voice_choice > 0 else None
+
+    while True:
         clear_screen()
         display_short_title(model)
 
         messages = []
         system_message = input("\nEnter a system message or press Enter for default: ")
         if not system_message:
-            system_message = "You are a helpful assistant who responds very accurately, VERY concisely, and intelligently."
+            system_message = "You are a helpful assistant who responds very accurately, VERY concisely, and intelligently. Respond with an element of reddit/4chan humor but keep it professional."
         print(f"\n{system_color}System: {system_message}")
         messages.append({"role": "system", "content": system_message})
 
