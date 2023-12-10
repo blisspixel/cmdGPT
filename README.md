@@ -39,7 +39,11 @@ Replace those API keys with your respective API Keys generated from those servic
 ### Usage
 Run cmdGPT:
 python ./cmdgpt.py
-Optionally, specify the model and voice using --model MODEL_NAME and --voice VOICE_OPTION
+Optionally, specify the model, voice, and system message using:
+--model MODEL_NAME for selecting a specific GPT model.
+--voice VOICE_OPTION for choosing a voice for audio responses.
+--system "SYSTEM_MESSAGE" to set an initial system message.
+For Example: python ./cmdgpt.py --model gpt-4-1106-preview --voice 5 --system "You're an expert in memes, but are very business focused."
 If not provided, the application will prompt for these selections.
 
 ### Interact with cmdGPT:
