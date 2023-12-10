@@ -187,7 +187,7 @@ def save_chat_transcript(messages, filename):
         current_chat_filename = filename
 
     try:
-        with open(current_chat_filename, 'w') as file:
+        with open(current_chat_filename, 'w', encoding='utf-8') as file:  # Specify UTF-8 encoding
             for message in messages:
                 role = message["role"].capitalize()
                 content = message["content"]
