@@ -43,7 +43,7 @@ Optionally, specify the model, voice, and system message using:
 --model MODEL_NAME for selecting a specific GPT model.
 --voice VOICE_OPTION for choosing a voice for audio responses.
 --system "SYSTEM_MESSAGE" to set an initial system message.
-For Example: python ./cmdgpt.py --model gpt-4-1106-preview --voice 5 --system "You're an expert in memes, but are very business focused."
+For Example: python ./cmdgpt.py --model gpt-4-1106-preview --voice 6 --system "Pretend you're santa claus but you now need to make a little extra money so you're trying to sell people on extended car warrantys."
 If not provided, the application will prompt for these selections.
 
 ### Interact with cmdGPT:
