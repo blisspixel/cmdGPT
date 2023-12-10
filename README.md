@@ -12,7 +12,7 @@ Robust error logging for efficient troubleshooting.
 Flexible command-line arguments for custom model and voice selection.
 Preservation of chat transcripts for review and analysis.
 
-<img src="examples/cmdGPT2.png" width="500"/>
+<img src="examples/cmdGPT2.png" width="800"/>
 
 ### Prerequisites
 Python 3.11 or newer.
