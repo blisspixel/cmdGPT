@@ -1,4 +1,5 @@
 import os
+import subprocess
 import random
 import platform
 import asyncio
@@ -7,6 +8,12 @@ from colorama import Fore, init
 
 # Initialize colorama for colored terminal text
 init(autoreset=True)
+
+def check_and_run_getvoices():
+    """Check if 'voiceexamples.html' exists and run 'getvoices.py' if not."""
+    if not os.path.exists('voiceexamples.html'):
+        print("Running 'getvoices.py' to generate 'voiceexamples.html'...")
+        subprocess.run(['python', 'getvoices.py'])
 
 def clear_screen():
     """Clears the terminal screen."""
@@ -27,11 +34,12 @@ def display_initial_title():
     print("- Type 'exit' or 'quit' to end the session.")
     print("----------------------------------------------")
 
-def display_short_title(model_name, voice_name=None):
-    """Displays a short title with the selected model and voice name."""
+def display_short_title(model_name, voice_name, system_message):
+    """Displays a short title with the selected model, voice name, and system message."""
     system_color = Fore.LIGHTBLACK_EX
-    voice_display = f" | {voice_name}" if voice_name else ""
-    print(f"{system_color}cmdGPT | {model_name}{voice_display} | 'clear', 'reset', 'exit' or 'quit'")
+    voice_display = f" | {voice_name}" if voice_name else " | No Voice"
+    print(f"{system_color}cmdGPT | {model_name}{voice_display} | '{system_message}' | 'clear', 'reset', 'exit' or 'quit'")
+
 
 def sanitize_for_filename(text, max_length=20):
     """Sanitizes a string to be safe for use as a filename."""
