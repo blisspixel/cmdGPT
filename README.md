@@ -1,7 +1,7 @@
 ## cmdGPT - Elevate Your CLI with OpenAI GPT & ElevenLabs Voice
 Unleash the power of AI in your terminal with cmdGPT! Tailored for tech enthusiasts and developers, this cutting-edge chat interface connects you to the forefront of AI advancements, featuring the latest OpenAI GPT models as of December 2023. Dive into an exhilarating conversational adventure, blending the robust capabilities of GPT-3.5 and GPT-4 with the remarkably lifelike voices from ElevenLabs' text-to-speech technology. cmdGPT isn't just a tool; it's your gateway to exploring the rich possibilities of conversational AI, all within the familiar realm of your command line. Get ready to be captivated by its unique, immersive chatting experience that sets a new standard in AI interactions!
 
-<img src="examples/cmdGPT.png" width="600"/>
+<img src="examples/cmdGPT.png" width="700"/>
 
 ### Features
 Terminal-based chat interface for a streamlined experience.
@@ -12,7 +12,7 @@ Error logging for troubleshooting.
 Optional command-line arguments for model and voice selection.
 Chat transcript preservation for record-keeping.
 
-<img src="examples/cmdGPT2.png" width="600"/>
+<img src="examples/cmdGPT2.png" width="700"/>
 
 ### Prerequisites
 Python 3.11 or newer.
