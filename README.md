@@ -1,5 +1,5 @@
-## cmdGPT - A Command Line Interface for OpenAI GPT
-cmdGPT is a terminal-based chat interface for interacting with OpenAI's GPT models, tailored for developers and enthusiasts. It offers a quick and straightforward way to chat with various GPT models without a graphical user interface.
+## cmdGPT - Elevate Your CLI with OpenAI GPT & ElevenLabs Voice
+Unleash the power of AI in your terminal with cmdGPT! Tailored for tech enthusiasts and developers, this cutting-edge chat interface connects you to the forefront of AI advancements, featuring the latest OpenAI GPT models as of December 2023. Dive into an exhilarating conversational adventure, blending the robust capabilities of GPT-3.5 and GPT-4 with the remarkably lifelike voices from ElevenLabs' text-to-speech technology. cmdGPT isn't just a tool; it's your gateway to exploring the rich possibilities of conversational AI, all within the familiar realm of your command line. Get ready to be captivated by its unique, immersive chatting experience that sets a new standard in AI interactions!
 
 <img src="examples/cmdGPT.png" width="500"/>
 
@@ -43,7 +43,7 @@ Optionally, specify the model, voice, and system message using:
 --model MODEL_NAME for selecting a specific GPT model.
 --voice VOICE_OPTION for choosing a voice for audio responses.
 --system "SYSTEM_MESSAGE" to set an initial system message.
-For Example: python ./cmdgpt.py --model gpt-4-1106-preview --voice 6 --system "Pretend you're santa claus but you now need to make a little extra money so you're trying to sell people on extended car warrantys."
+For Example: python ./cmdgpt.py --model gpt-4-1106-preview --voice 6 --system "Pretend you're Santa Claus but you now need to make a little extra money so you're trying to sell people on extended car warrantys."
 If not provided, the application will prompt for these selections.
 
 ### Interact with cmdGPT:
