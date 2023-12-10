@@ -87,9 +87,9 @@ def display_initial_title():
     print("- Type 'exit' or 'quit' to end the session.")
     print("----------------------------------------------")
 
-# Display a short title
-def display_short_title(model_name):
-    print(f"{system_color}cmdGPT | {model_name} | 'clear', 'reset', 'exit' or 'quit'")
+def display_short_title(model_name, voice_name=None):
+    voice_display = f" | {voice_name}" if voice_name else ""
+    print(f"{system_color}cmdGPT | {model_name}{voice_display} | 'clear', 'reset', 'exit' or 'quit'")
 
 # Function to animate the processing message
 async def animate_processing(message):
@@ -337,6 +337,8 @@ async def chat():
     voice_choice_index = args.voice - 1 if 0 < args.voice <= len(custom_voices) else select_voice()
     voice_config = custom_voices[voice_choice_index] if voice_choice_index is not None else None
 
+    selected_voice_name = custom_voices[voice_choice_index]['name'] if voice_choice_index is not None else None
+
     # Handle system message from arguments or prompt the user
     system_message = args.system
     if system_message is None:
@@ -346,7 +348,7 @@ async def chat():
 
     while True:
         clear_screen()
-        display_short_title(model)
+        display_short_title(model, selected_voice_name)
 
         print(f"\n{system_color}System: {system_message}")
         messages = [{"role": "system", "content": system_message}]
@@ -366,7 +368,7 @@ async def chat():
                 save_chat_transcript(messages, current_chat_filename)
                 messages = [{"role": "system", "content": system_message}]
                 clear_screen()
-                display_short_title(model)
+                display_short_title(model, selected_voice_name)  # Update title after clear
                 continue
 
             messages.append({"role": "user", "content": user_input})
