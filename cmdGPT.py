@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from colorama import Fore, init
 
 from utils import (clear_screen, display_initial_title, display_short_title, 
-                   animate_processing, clear_processing_message, sanitize_for_filename)
+                   animate_processing, clear_processing_message, sanitize_for_filename, check_and_run_getvoices)
 from logging_config import setup_logging
 from voice_handler import select_voice, load_custom_voices, stream_audio_websocket
 from chat_management import save_chat_transcript, save_audio_file, manage_audio_files
@@ -47,6 +47,7 @@ def select_model():
     return models.get(choice, "gpt-4-1106-preview")
 
 async def chat():
+    check_and_run_getvoices()
     args = parse_args()
 
     while True:
