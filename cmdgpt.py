@@ -23,6 +23,8 @@ from dotenv import load_dotenv
 load_dotenv()
 init(autoreset=True)
 
+current_chat_filename = None
+
 # Setup logging
 if not os.path.exists('logs'):
     os.makedirs('logs')
@@ -31,9 +33,9 @@ logging.basicConfig(filename=log_filename, level=logging.DEBUG)
 
 def parse_args():
     parser = argparse.ArgumentParser(description="cmdGPT Chat Application")
-    # Updated model choices
-    parser.add_argument('--model', type=str, default='gpt-4-1106-preview', choices=['gpt-4-1106-preview', 'gpt-4-vision-preview', 'gpt-3.5-turbo-1106', 'gpt-3.5-turbo'], help='Choose the model to use')
+    parser.add_argument('--model', type=str, default=None, choices=['gpt-4-1106-preview', 'gpt-4-vision-preview', 'gpt-3.5-turbo-1106', 'gpt-3.5-turbo'], help='Choose the model to use')
     parser.add_argument('--voice', type=int, default=0, help='Choose the voice option (0 for no voice)')
+    parser.add_argument('--system', type=str, default=None, help='Specify a system message')
     return parser.parse_args()
 
 # Initialize OpenAI client with BETA endpoint
@@ -154,14 +156,10 @@ def select_voice():
         return None
 
     try:
-        voice_index = int(voice_choice) - 1
-        if 0 <= voice_index < len(custom_voices):
-            return custom_voices[voice_index]
+        return int(voice_choice) - 1
     except ValueError:
-        pass
-
-    print("Invalid choice, defaulting to No Voice.")
-    return None
+        print("Invalid choice, defaulting to No Voice.")
+        return None
 
 def select_model_and_voice():
     model = select_model()
@@ -169,16 +167,58 @@ def select_model_and_voice():
     print(f"Model selected: '{model}', Voice config selected: '{voice_config}'")  # Debug print
     return model, voice_config
 
-def save_chat_transcript(messages):
+def sanitize_for_filename(text, max_length=20):
+    # Remove invalid filename characters
+    invalid_chars = '<>:"/\\|?*'
+    sanitized = ''.join(c for c in text if c not in invalid_chars)
+
+    # Truncate to the specified maximum length
+    return sanitized[:max_length]
+
+def save_chat_transcript(messages, filename):
+    global current_chat_filename
+
     if not os.path.exists('chat_transcripts'):
         os.makedirs('chat_transcripts')
-    filename = datetime.now().strftime("chat_transcripts/chat_%Y%m%d%H%M%S.txt")
-    with open(filename, 'w') as file:
-        for message in messages:
-            role = message["role"].capitalize()
-            content = message["content"]
-            file.write(f"{role}: {content}\n")
-    manage_transcript_files()
+
+    if filename is None:
+        current_chat_filename = datetime.now().strftime("chat_transcripts/chat_%Y%m%d%H%M%S.txt")
+    else:
+        current_chat_filename = filename
+
+    try:
+        with open(current_chat_filename, 'w') as file:
+            for message in messages:
+                role = message["role"].capitalize()
+                content = message["content"]
+                file.write(f"{role}: {content}\n")
+        manage_chat_transcript_files()
+        # print(f"Chat transcript saved as: {current_chat_filename}")  # Commented out to not display save message
+    except Exception as e:
+        logging.error("Error while saving chat transcript: %s", str(e))
+        print(f"An error occurred while saving the chat transcript: {str(e)}")  # Debug print
+
+def manage_chat_transcript_files():
+    transcript_files = [os.path.join("chat_transcripts", f) for f in os.listdir("chat_transcripts") if f.endswith('.txt')]
+    transcript_files = sorted(transcript_files, key=os.path.getctime, reverse=True)
+
+    # Keep only the last 10 transcript files
+    for file in transcript_files[10:]:
+        os.remove(file)
+
+def save_audio_file(audio_segment, filename):
+    if not os.path.exists('chat_transcripts'):
+        os.makedirs('chat_transcripts')
+    audio_segment.export(f'chat_transcripts/{filename}', format='mp3')
+    manage_audio_files()
+
+def manage_audio_files():
+    audio_files = [os.path.join("chat_transcripts", f) for f in os.listdir("chat_transcripts") if f.endswith('.mp3')]
+    audio_files = sorted(audio_files, key=os.path.getctime, reverse=True)
+
+    # Keep only the last 10 audio files
+    for file in audio_files[10:]:
+        os.remove(file)
 
 def get_sorted_transcript_files():
     files = [os.path.join("chat_transcripts", f) for f in os.listdir("chat_transcripts")]
@@ -262,16 +302,26 @@ async def stream_audio_websocket(voice_config, text, display_text_callback):
             audio_thread.start()
 
             # Optionally, join the thread if you want to wait for it to finish
-            # audio_thread.join()           
-            
+            # audio_thread.join()
         except Exception as e:
             logging.error("Error while playing audio: %s", str(e))
             print("There was an error playing the audio.")
+
+        try:
+            sanitized_response = sanitize_for_filename(text)
+            filename = f"{sanitized_response}_{datetime.now().strftime('%Y%m%d%H%M%S')}.mp3"
+            save_audio_file(audio_segment, filename)          
+        except Exception as e:
+            logging.error("Error while saving audio file: %s", str(e))
+            print("There was an error saving the audio file.")
 
         # Clean up
         audio_buffer.close()
 
 async def chat():
+    global current_chat_filename
+    current_chat_filename = None  # Reset the filename at the start of the chat
+
     # Initialize OpenAI client
     client = openai.OpenAI(api_key=openai.api_key)
 
@@ -281,42 +331,39 @@ async def chat():
     # Display initial ASCII art and instructions
     display_initial_title()
 
-    # Load custom voices from config
+    # Load custom voices from config and process arguments
     custom_voices = load_custom_voices()
+    model = args.model if args.model is not None else select_model()
+    voice_choice_index = args.voice - 1 if 0 < args.voice <= len(custom_voices) else select_voice()
+    voice_config = custom_voices[voice_choice_index] if voice_choice_index is not None else None
 
-    # Use the model from arguments or prompt the user
-    model = args.model if args.model != 'gpt-4-1106-preview' else select_model()
-
-    # If voice argument is provided and valid, use it; otherwise, prompt the user
-    if 0 < args.voice <= len(custom_voices):
-        voice_config = custom_voices[args.voice - 1]  # Arrays are 0-indexed, so subtract 1
-    else:
-        voice_choice = select_voice()  # This prompts the user and returns the index
-        voice_config = custom_voices[voice_choice - 1] if voice_choice > 0 else None
+    # Handle system message from arguments or prompt the user
+    system_message = args.system
+    if system_message is None:
+        system_message = input("\nEnter a system message or press Enter for default: ")
+        if not system_message:
+            system_message = "You are a helpful assistant who responds very accurately, VERY concisely, and intelligently. Respond with an element of reddit/4chan humor but keep it professional."
 
     while True:
         clear_screen()
         display_short_title(model)
 
-        messages = []
-        system_message = input("\nEnter a system message or press Enter for default: ")
-        if not system_message:
-            system_message = "You are a helpful assistant who responds very accurately, VERY concisely, and intelligently. Respond with an element of reddit/4chan humor but keep it professional."
         print(f"\n{system_color}System: {system_message}")
-        messages.append({"role": "system", "content": system_message})
+        messages = [{"role": "system", "content": system_message}]
 
         while True:
             user_input = input(f"\n{user_color}You: ")
             if user_input.lower() in ["exit", "quit"]:
-                save_chat_transcript(messages)
+                save_chat_transcript(messages, current_chat_filename)
                 return  # Exit the application
             elif user_input.lower() == "reset":
-                save_chat_transcript(messages)
+                save_chat_transcript(messages, current_chat_filename)
                 clear_screen()
                 display_initial_title()  # Re-display ASCII art
+                current_chat_filename = None  # Reset the filename for a new chat
                 break
             elif user_input.lower() == "clear":
-                save_chat_transcript(messages)
+                save_chat_transcript(messages, current_chat_filename)
                 messages = [{"role": "system", "content": system_message}]
                 clear_screen()
                 display_short_title(model)
@@ -341,6 +388,7 @@ async def chat():
                     print(f"{cmdGPT_color}cmdGPT: {assistant_message}")
 
                 messages.append({"role": "assistant", "content": assistant_message})
+                save_chat_transcript(messages, current_chat_filename)  # Save after each interaction
 
             except Exception as e:
                 processing_task.cancel()  # Stop the animation in case of an error
