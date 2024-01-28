@@ -36,15 +36,16 @@ def select_model():
     """Select the GPT model to use."""
     print("\nSelect a model:")
     models = {
-        "1": "gpt-4-1106-preview",
-        "2": "gpt-4-vision-preview",
-        "3": "gpt-3.5-turbo-1106",
-        "4": "gpt-3.5-turbo"
+        "1": "gpt-4-0125-preview",
+        "2": "gpt-4-1106-preview",
+        "3": "gpt-4-vision-preview",
+        "4": "gpt-3.5-turbo-1106",
+        "5": "gpt-3.5-turbo"
     }
     for key, value in models.items():
         print(f"{key}. {value}")
     choice = input("Enter your choice (default is 1): ")
-    return models.get(choice, "gpt-4-1106-preview")
+    return models.get(choice, "gpt-4-0125-preview")
 
 async def chat():
     check_and_run_getvoices()
